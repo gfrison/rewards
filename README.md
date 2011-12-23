@@ -10,11 +10,11 @@ Dependencies and build management is delegated to Gradle
 
 If you want to run it simply type: `gradle exec`
 
-*compile java -- `gradle compileJava` 
+* compile java -- `gradle compileJava` 
 
-*compile groovy -- `gradle compileGroovy` 
+* compile groovy -- `gradle compileGroovy` 
 
-*test -- `gradle test` 
+* test -- `gradle test` 
 
 
 Spring
