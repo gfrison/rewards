@@ -18,7 +18,9 @@ beans {
 		arguments=[new java.lang.String("classpath:conf/${environment}/log4j.xml")]
 	}
 	context.'property-placeholder'('location':"classpath:conf/${environment}/config.properties")
-	context.'component-scan' ('base-package':"com.covestor.test")
+	/*
+	context.'component-scan' ('base-package':"you own package")
+	*/
 	task.executor (id:"taskExecutor", 'pool-size':"10")
 
 }
