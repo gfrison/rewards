@@ -20,7 +20,9 @@ If you want to run it simply type: `gradle exec`
 Spring
 ------
 
-The project makes use of Springframework through the Grails based DSL located in (src/main/resources/conf/beans.groovy).
-It's a very concise way to handle Spring configuration (http://www.grails.org/doc/latest/guide/spring.html#springdsl)
+The project makes use of Springframework through the [Grails based DSL](https://github.com/gfrison/proto-app/blob/master/src/main/resources/conf/beans.groovy).
+
+It's a very concise way to handle Spring configuration. For more information (http://www.grails.org/doc/latest/guide/spring.html#springdsl).
+
   
 
