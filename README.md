@@ -25,4 +25,8 @@ The project makes use of Springframework through the [Grails based DSL](https://
 It's a very concise way to handle Spring configuration. For more information (http://www.grails.org/doc/latest/guide/spring.html#springdsl).
 
   
+Eclipse
+-------
+
+In order to get the project dependencies in Eclipse just prompt `gradle eclipse` 
 
