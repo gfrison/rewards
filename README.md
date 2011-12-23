@@ -1,7 +1,7 @@
 Proto App
 =========
 
-This is an archetype of any Java or Groovy written standalone application.
+This is an archetype of any Java or Groovy standalone application.
 
 Gradle
 ------
@@ -29,4 +29,18 @@ Eclipse
 -------
 
 In order to get the project dependencies in Eclipse just prompt `gradle eclipse` 
+
+
+Environments
+------------
+
+It's possibile to customize configuration for any given environment such as development, integration, 
+production -- or whatever you want define -- 
+adding the folder `src/main/resources/conf/{environment name}/`,
+then compiling the proper placeholer `config.properties` for the environment specific variables and
+`log4j.xml` for configuring logging.
+
+For selecting the environment during the execution set system property `gradle exec -Denvironment=<environment>` or update build.gradle file.
+
+
 
