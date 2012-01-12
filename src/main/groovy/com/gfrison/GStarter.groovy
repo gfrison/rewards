@@ -1,4 +1,7 @@
-package com.gfrison.test
+package com.gfrison
+import java.security.CodeSource;
+import java.util.jar.Manifest;
+
 import org.apache.log4j.Logger
 import org.codehaus.groovy.grails.commons.spring.GrailsApplicationContext
 import org.springframework.context.ApplicationContext
@@ -15,6 +18,7 @@ class GStarter {
 	static main(args) {
         ClassPathXmlApplicationContext cx = null;
         try {
+			String appname=System.getProperty("app.name")?:'',appversion=System.getProperty("app.version")?:''
 			def bb = new grails.spring.BeanBuilder()
 			bb.loadBeans("conf/beans.groovy")
 			bb.activate()
@@ -30,12 +34,14 @@ class GStarter {
                     finalCx.close();
                 }
             });
-            log.info(System.getProperty("app.name") + " " + System.getProperty("version") + " open for e-business");
+			log.info 'environment:'+System.getProperty('environment')?:'development'
+            log.info(appname + " " + appversion + " open for e-business");
 
         } catch (Throwable e) {
             e.printStackTrace();
             Logger log = Logger.getRootLogger();
             log.error("error during startup", e);
+			new Killer();
         }
 	}
 }

@@ -1,12 +1,26 @@
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
+apply plugin: 'application'
+
+projectName = 'proto-app'
+version = '1.0'
+applicationName = "$projectName"
+mainClassName = "com.gfrison.GStarter"
+run.systemProperties = ['environment':'development','app.name':"$projectName",'app.version':"$version"]
+// since it's not yet possibile to set system properties 
+// into launch script (http://issues.gradle.org/browse/GRADLE-1456)
+// you should set a variable (PROTO-APP-OPTS). 
+// By default 'environment' is set to development
+// Ex: export APP_OPTS="-Denvironment=integration"
+startScripts.optsEnvironmentVar='APP_OPTS'
+
 repositories {
 	mavenCentral()
-	mavenRepo urls: ["http://repository.springsource.com/maven/bundles/release"]
-	mavenRepo urls: ["https://repository.apache.org/content/repositories/snapshots/"]
-	mavenRepo urls: ["http://repo1.maven.org/maven2"]
-	mavenRepo urls: ["http://download.java.net/maven/2/"]
+	mavenRepo url: "http://repository.springsource.com/maven/bundles/release"
+	mavenRepo url: "https://repository.apache.org/content/repositories/snapshots/"
+	mavenRepo url: "http://repo1.maven.org/maven2"
+	mavenRepo url: "http://download.java.net/maven/2/"
 }
 dependencies{
 	compile 'org.codehaus.groovy:groovy-all:1.8.1'
@@ -29,17 +43,9 @@ dependencies{
 		}
 	compile 'org.grails:grails-spring:1.3.4'
 	
-	compile 'rome:rome:1.0'
-	compile 'org.htmlparser:htmlparser:1.6'
-	compile 'commons-httpclient:commons-httpclient:3.1'
-	compile 'org.jsoup:jsoup:0.2.2'
 
 
 
 }
-task exec(type: JavaExec, dependsOn: "classes"){
-	classpath configurations.compile, sourceSets.main.classes
-	main = "com.gfrison.test.GStarter"
-	systemProperty 'environment', 'development'
-}
+
 

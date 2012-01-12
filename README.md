@@ -16,6 +16,12 @@ If you want to run it simply type: `gradle exec`
 
 * test -- `gradle test` 
 
+* run -- `gradle run`
+
+* create launch script  -- `gradle installApp`
+
+* create distribution (tar.gz)   -- `gradle distZip`
+
 
 Spring
 ------
