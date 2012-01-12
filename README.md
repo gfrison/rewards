@@ -1,7 +1,7 @@
 Proto App
 =========
 
-This is an archetype of any Java or Groovy standalone application.
+This is an archetype of any Java or Groovy standalone application based on Springframework and Gradle.
 
 Gradle
 ------
@@ -20,7 +20,7 @@ If you want to run it simply type: `gradle exec`
 
 * create launch script  -- `gradle installApp`
 
-* create distribution (tar.gz)   -- `gradle distZip`
+* create distribution (zip)   -- `gradle distZip` it creates a zip file according to the build.gradle's projectName and version
 
 
 Spring
