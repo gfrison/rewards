@@ -49,7 +49,7 @@ Then set the proper environment's placeholer `config.properties` and `log4j.xml`
 
 When you run the application from start script you have to set the system variable ex:
 
-`export APP_OPTS=-Denvironment=<development/integration/production>`
+`export APP_OPTS="-Denvironment=<development/integration/production>"`
 
 
 
