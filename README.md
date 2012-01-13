@@ -8,7 +8,7 @@ Gradle
 
 Dependencies and build management is delegated to Gradle
 
-If you want to run it simply type: `gradle exec`
+If you want to run it simply type: `gradle run`. Other tasks:
 
 * compile java -- `gradle compileJava` 
 
