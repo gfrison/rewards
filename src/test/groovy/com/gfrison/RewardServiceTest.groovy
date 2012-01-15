@@ -1,7 +1,6 @@
-/**
- * 
- */
 package com.gfrison
+import org.apache.camel.Exchange;
+
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
@@ -9,6 +8,7 @@ import groovy.json.JsonSlurper
 import javax.ws.rs.core.Response
 
 import org.apache.camel.EndpointInject
+import org.apache.camel.Processor
 import org.apache.camel.Produce
 import org.apache.camel.ProducerTemplate
 import org.apache.camel.builder.ExpressionBuilder
@@ -24,10 +24,11 @@ import org.junit.BeforeClass
 import org.junit.Test
 import org.springframework.jdbc.core.JdbcTemplate
 
+import com.gfrison.services.InitDevelopmentDatabase;
 import com.gfrison.services.RewardService
 
 /**
- * @author gfrison
+ * @author giancarlo@gfrison.com <Giancarlo Frison>
  *
  */
 class RewardServiceTest extends CamelTestSupport{
@@ -50,22 +51,14 @@ class RewardServiceTest extends CamelTestSupport{
 		datasource.setUsername("sa")
 		datasource.setPassword("")
 		db = new JdbcTemplate(datasource)
-		db.execute("""
-              create table rewards (
-				channel varchar (50) not null, 
-				reward varchar(100) null, 
-				primary key(channel)
-			  )
-			""")
-		db.execute("insert into rewards values ('SPORTS','CHAMPIONS_LEAGUE_FINAL_TICKET')")
-		db.execute("insert into rewards values ('MUSIC','KARAOKE_PRO_MICROPHONE')")
-		db.execute("insert into rewards values ('MOVIES','PIRATES_OF_THE_CARIBBEAN_COLLECTION')")
+		def initHSQLDB = new InitDevelopmentDatabase(performInit:true,db:db)
+		initHSQLDB.initHSQLDB() 
 		assertEquals('CHAMPIONS_LEAGUE_FINAL_TICKET', db.queryForObject("select reward from rewards where channel='SPORTS'",String.class))
 	}
 
 	@Before
 	void initInstance(){
-		rewardService = new RewardService(producer:template, db:db)
+		rewardService = new RewardService(eligibility:template, db:db)
 		json = new JsonBuilder()
 		json.portfolio {
 			channels(['SPORTS'])
@@ -75,6 +68,9 @@ class RewardServiceTest extends CamelTestSupport{
 	}
 
 
+	/*
+	 * test if EligibilityService receive correct input
+	 */
 	@Test
 	void testInvokingEligibilityWithCorrectAccounID(){
 		eligibility.returnReplyBody(ExpressionBuilder.simpleExpression(RewardService.EligibilityOutput.CUSTOMER_ELIGIBLE.name()))
@@ -84,6 +80,9 @@ class RewardServiceTest extends CamelTestSupport{
 		eligibility.assertIsSatisfied()
 	}
 
+	/*
+	 * test correct reward
+	 */
 	@Test
 	void testEligibility(){
 		eligibility.returnReplyBody(ExpressionBuilder.simpleExpression(RewardService.EligibilityOutput.CUSTOMER_ELIGIBLE.name()))
@@ -92,6 +91,62 @@ class RewardServiceTest extends CamelTestSupport{
 		def slurper = new JsonSlurper()
 		def json = slurper.parseText(res.getEntity())
 		assertEquals('CHAMPIONS_LEAGUE_FINAL_TICKET',json.account.rewards[0])
+	}
+
+	@Test
+	void testChannelWithoutReward(){
+		json = new JsonBuilder()
+		json.portfolio {
+			channels(['KIDS']) //no rewards at this channel
+		}
+		eligibility.returnReplyBody(ExpressionBuilder.simpleExpression(RewardService.EligibilityOutput.CUSTOMER_ELIGIBLE.name()))
+		Response res = rewardService.getRewards("account-12345", json.toString())
+		assertEquals(Response.ok().build().getStatus(), res.getStatus())
+		def slurper = new JsonSlurper()
+		def json = slurper.parseText(res.getEntity())
+		assertEquals(0,json.account.rewards.size())
+	}
+
+	/*
+	 * test negative response from EligibilityService
+	 */
+	@Test
+	void testIneligibility(){
+		eligibility.returnReplyBody(ExpressionBuilder.simpleExpression(RewardService.EligibilityOutput.CUSTOMER_INELIGIBLE.name()))
+		Response res = rewardService.getRewards("account-12345", json.toString())
+		assertEquals(Response.noContent().build().getStatus(), res.getStatus())
+	}
+
+	/*
+	 * test tech failure response from EligibilityService
+	 */
+	@Test
+	void testTechnicalFailure(){
+		eligibility.whenAnyExchangeReceived(new Processor(){
+			void process(Exchange exchange) throws Exception{
+				//unchecked exception for technical errors
+				throw new RuntimeException("test technical failure")
+			}
+		});
+		Response res = rewardService.getRewards("account-12345", json.toString())
+		//503 Service Unavailable
+		assertEquals(503, res.getStatus())
+	}
+
+	@Test
+	void testInvalidAccount(){
+		eligibility.whenAnyExchangeReceived(new Processor(){
+			void process(Exchange exchange) throws Exception{
+				throw new Exception("Invalid account number")
+			}
+		});
+		Response res = rewardService.getRewards("account-12345", json.toString())
+		//400 Bad Request
+		assertEquals(400, res.getStatus())
+		def slurper = new JsonSlurper()
+		def json = slurper.parseText(res.getEntity())
+		assertNotNull(json?.account?.error)
+		
 	}
 
 	@Override

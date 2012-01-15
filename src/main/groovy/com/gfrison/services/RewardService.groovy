@@ -10,9 +10,9 @@ import javax.ws.rs.PathParam
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status
 
+import org.apache.camel.CamelExecutionException
 import org.apache.camel.ProducerTemplate
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.JdbcTemplate
 
 
@@ -28,7 +28,7 @@ class RewardService {
 	
 
 	@Autowired
-	private ProducerTemplate producer
+	private ProducerTemplate eligibility
 	
 	@Autowired
 	private JdbcTemplate db
@@ -42,10 +42,25 @@ class RewardService {
 		def json = slurper.parseText(portfolioJson)
 		if(json.portfolio?.channels?.isEmpty())
 			return Response.status(Status.BAD_REQUEST).build()
-		def eligibility = producer.requestBody(accountId)
-		log.info "account:${accountId}, eligible response:"+eligibility
+		log.info "account:${accountId}, portfolio:${portfolioJson}"
 		def jsonReply = new JsonBuilder()
-		switch(eligibility){
+		
+		//perform request to EligibilityService
+		def eligibilityResponse
+		try{
+			eligibilityResponse = eligibility.requestBody(accountId)
+		}catch(CamelExecutionException e){
+			if(e.getCause() instanceof RuntimeException){
+				//503 Service Unavailable (Technical errors)
+				return Response.status(503).build()
+			}else {
+				//400 Bad Request (Invalid account number)
+				jsonReply.account{error e.getMessage()}
+				return Response.status(400).entity(jsonReply.toString()).build()
+			}
+		}
+		log.info "account:${accountId}, eligible response:"+eligibilityResponse
+		switch(eligibilityResponse){
 			case EligibilityOutput.CUSTOMER_ELIGIBLE.name():
 				def channels = json.portfolio.channels.collect{"'"+it+"'"}.join(',')
 				log.info "channels:${channels}"
@@ -54,26 +69,14 @@ class RewardService {
 				jsonReply.account{rewards dbrewards}
 				return Response.ok(jsonReply.toString()).build()
 			break;
+			case EligibilityOutput.CUSTOMER_INELIGIBLE.name():
+				// 204 No Content (successfull result, but no rewards) 
+				return Response.noContent().build()
+			break;
 		}
-		return Response.ok(eligibility).build()
+		//not recognized EligilibityService response
+		return Response.serverError().build()
 	}
 	
-	/**
-	* query with JDBCTemplate but if value is not found, will return null instead of Exception
-	*
-	* @param <T>
-	* @param db
-	* @param sql
-	* @param requiredType
-	* @param args
-	* @return
-	*/
-   public <T> T queryFor(String sql,  Class<T> requiredType, Object... args){
-	   try {
-		   return db.queryForObject(sql, args, requiredType);
-	   } catch (EmptyResultDataAccessException e) {
-		   return null;
-	   }
-   }
 
 }

@@ -1,5 +1,5 @@
 package com.gfrison 
-import groovy.util.logging.Slf4j
+import groovy.util.logging.Slf4j;
 ;
 
 /**

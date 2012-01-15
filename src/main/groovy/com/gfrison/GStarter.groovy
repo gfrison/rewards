@@ -1,6 +1,4 @@
 package com.gfrison
-import java.security.CodeSource;
-import java.util.jar.Manifest;
 
 import org.apache.log4j.Logger
 import org.codehaus.groovy.grails.commons.spring.GrailsApplicationContext

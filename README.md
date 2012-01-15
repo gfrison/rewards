@@ -1,12 +1,44 @@
-Proto App
+Rewards
 =========
 
-This is an archetype of any Java or Groovy standalone application based on Springframework and Gradle.
+This is the demo application available at: https://github.com/gfrison/rewards 
+
+It leverages on:
+
+* Groovy
+
+* Gradle
+
+* Springframework
+
+* Camel
+
+* CXF
+
+Open a Linux console and go to the project home.
+
+Type `gradle test` you will test it.
+
+Type `gradle run` you will run it (with development setup). 
+After that you may test the up and running application typing
+`curl -v http://localhost:8080/rewards/account/234234 -X GET -d '{"portfolio":{"channels":["SPORTS"]}}'` 
+
+Type `gradle distZip` you will obtain a complete deliverable zip file which contains an executable launcher
+
+Configuration
+-------------
+
+Available on src/main/resources
+
+RewardService: src/main/groovy/com/gfrison/services/RewardService.groovy 
+
 
 Gradle
 ------
 
-Dependencies and build management is delegated to Gradle
+Dependencies and build management is delegated to Gradle.
+
+Install it from http://gradle.org not from `apt-get install gradle`. More recent version, more better  
 
 If you want to run it simply type: `gradle run`. Other tasks:
 
