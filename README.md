@@ -58,7 +58,7 @@ If you want to run it simply type: `gradle run`. Other tasks:
 Spring
 ------
 
-The project makes use of Springframework through the [Grails based DSL](https://github.com/gfrison/proto-app/blob/master/src/main/resources/conf/beans.groovy).
+The project makes use of Springframework through the [Grails based DSL](https://github.com/gfrison/rewards/blob/master/src/main/resources/conf/beans.groovy).
 
 It's a very concise way to handle Spring configuration. For more information (http://www.grails.org/doc/latest/guide/spring.html#springdsl).
 
