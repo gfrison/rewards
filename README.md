@@ -1,9 +1,11 @@
 Rewards
 =========
 
-This is the demo application available at: https://github.com/gfrison/rewards 
+This is a SOA (Service Oriented Architecture) example application.
 
-It leverages on:
+The requirement's specifications are defined in the [Scenario](https://github.com/gfrison/rewards/wiki).
+
+The project leverages on:
 
 * Groovy
 
